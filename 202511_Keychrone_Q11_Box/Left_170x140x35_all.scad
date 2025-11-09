@@ -24,12 +24,23 @@
 part = "bottom"; // "bottom" or "lid"
 orient_lid_for_print = true; // if true, flip lid so top faces bed
 
-// Optional engraved text on lid top (prints concave when flipped)
-lid_text = "chenle02@gmail.com, 2025-11 Keychron Q11 (Left)"; // e.g., "Boda Kaikai"; empty string disables
-lid_text_depth = 1.2;            // mm depth of engraving (<= top_bottom_thick)
-lid_text_size = 18;              // mm nominal text height
+// Engraved text settings (concave when flipped)
+lid_text = "";                 // legacy single-line (centered) text; empty disables
+lid_text_depth = 1.2;          // mm depth of engraving (<= top_bottom_thick)
+lid_text_size = 18;            // legacy single-line size
 lid_text_font = "Liberation Sans:style=Bold"; // installed font name
-lid_text_offset = [0, 0];        // XY offset from lid center (mm)
+lid_text_offset = [0, 0];      // XY offset for legacy single-line (mm)
+
+// Centered title (first line)
+center_title_text = "Keychron Q11 (Left)";
+center_title_size = 16;        // slightly smaller than previous 18
+center_title_offset = [0, 0];  // XY offset from lid center (mm)
+
+// Bottom-right info (last two lines)
+corner_info_lines = ["chenle02@gmail.com", "2025-11"];
+corner_info_size = 9;          // much smaller
+corner_info_margin = [5, 5];   // [x,y] margin from bottom-right edges (mm)
+corner_info_line_spacing = 1.1; // spacing multiplier between lines
 
 inner_x = 170;
 inner_y = 140;
@@ -79,8 +90,32 @@ module lid_outer(){
 
 // 3D volume to subtract for engraving text on the lid's top
 module lid_text_cut(){
-    if (lid_text != ""){
-        depth = lid_text_depth > top_bottom_thick ? top_bottom_thick : lid_text_depth;
+    depth = lid_text_depth > top_bottom_thick ? top_bottom_thick : lid_text_depth;
+
+    // 1) Centered title
+    if (center_title_text != ""){
+        translate([ lid_outer_x/2 + center_title_offset[0],
+                    lid_outer_y/2 + center_title_offset[1],
+                    lid_outer_z - depth + 0.01 ])
+            linear_extrude(height = depth + 0.02)
+                text(center_title_text, size=center_title_size, font=lid_text_font,
+                     halign="center", valign="center");
+    }
+
+    // 2) Bottom-right info lines (stack upward; last line closest to corner)
+    if (len(corner_info_lines) > 0){
+        for (i = [0 : len(corner_info_lines)-1]){
+            line_index_from_bottom = len(corner_info_lines)-1 - i;
+            yoff = corner_info_margin[1] + line_index_from_bottom * corner_info_size * corner_info_line_spacing;
+            translate([ lid_outer_x - corner_info_margin[0], yoff, lid_outer_z - depth + 0.01 ])
+                linear_extrude(height = depth + 0.02)
+                    text(corner_info_lines[i], size=corner_info_size, font=lid_text_font,
+                         halign="right", valign="bottom");
+        }
+    }
+
+    // 3) Fallback: legacy single-line centered text
+    if (center_title_text == "" && len(corner_info_lines) == 0 && lid_text != ""){
         translate([ lid_outer_x/2 + lid_text_offset[0],
                     lid_outer_y/2 + lid_text_offset[1],
                     lid_outer_z - depth + 0.01 ])
