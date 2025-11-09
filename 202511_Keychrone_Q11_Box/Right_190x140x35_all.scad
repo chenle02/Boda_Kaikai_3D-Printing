@@ -7,7 +7,7 @@
 // ---------------- Parameters ----------------
 part = "bottom"; // "bottom" or "lid"
 
-inner_x = 190;
+inner_x = 195;
 inner_y = 140;
 inner_z = 35;
 
