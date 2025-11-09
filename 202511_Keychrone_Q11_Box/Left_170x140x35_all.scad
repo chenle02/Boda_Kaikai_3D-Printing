@@ -24,6 +24,13 @@
 part = "bottom"; // "bottom" or "lid"
 orient_lid_for_print = true; // if true, flip lid so top faces bed
 
+// Optional engraved text on lid top (prints concave when flipped)
+lid_text = "chenle02@gmail.com, 2025-11 Keychron Q11 (Left)"; // e.g., "Boda Kaikai"; empty string disables
+lid_text_depth = 1.2;            // mm depth of engraving (<= top_bottom_thick)
+lid_text_size = 18;              // mm nominal text height
+lid_text_font = "Liberation Sans:style=Bold"; // installed font name
+lid_text_offset = [0, 0];        // XY offset from lid center (mm)
+
 inner_x = 170;
 inner_y = 140;
 inner_z = 35;
@@ -65,6 +72,21 @@ module lid_outer(){
         // Inner cut for the skirt: leaves an 8 mm top, skirt depth = lid_overlap
         translate([side_wall, side_wall, 0])
             cube([lid_inner_x, lid_inner_y, lid_inner_z], center=false);
+        // Optional engraved text on the outer top surface
+        lid_text_cut();
+    }
+}
+
+// 3D volume to subtract for engraving text on the lid's top
+module lid_text_cut(){
+    if (lid_text != ""){
+        depth = lid_text_depth > top_bottom_thick ? top_bottom_thick : lid_text_depth;
+        translate([ lid_outer_x/2 + lid_text_offset[0],
+                    lid_outer_y/2 + lid_text_offset[1],
+                    lid_outer_z - depth + 0.01 ])
+            linear_extrude(height = depth + 0.02)
+                text(lid_text, size=lid_text_size, font=lid_text_font,
+                     halign="center", valign="center");
     }
 }
 
