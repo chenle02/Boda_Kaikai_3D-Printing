@@ -22,6 +22,7 @@
 
 // ---------------- Parameters ----------------
 part = "bottom"; // "bottom" or "lid"
+orient_lid_for_print = true; // if true, flip lid so top faces bed
 
 inner_x = 170;
 inner_y = 140;
@@ -71,7 +72,13 @@ module lid_outer(){
 if (part == "bottom"){
     bottom_box();
 } else if (part == "lid"){
-    lid_outer();
+    // Flip so the solid top faces the build plate to avoid supports
+    if (orient_lid_for_print) {
+        translate([0,0,lid_outer_z])
+            rotate([180,0,0]) lid_outer();
+    } else {
+        lid_outer();
+    }
 } else {
     // Show both for preview (offset the lid for visibility)
     bottom_box();
