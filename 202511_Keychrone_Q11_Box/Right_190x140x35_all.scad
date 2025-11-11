@@ -17,12 +17,12 @@ lid_text_offset = [0, 0];      // XY offset for legacy single-line (mm)
 
 // Centered title (first line)
 center_title_text = "Keychron Q11 (Right)";
-center_title_size = 16;        // slightly smaller than previous 18
+center_title_size = 12;        // slightly smaller than previous 18
 center_title_offset = [0, 0];  // XY offset from lid center (mm)
 
 // Bottom-right info (last two lines)
 corner_info_lines = ["chenle02@gmail.com", "2025-11"];
-corner_info_size = 9;          // much smaller
+corner_info_size = 6;          // much smaller
 corner_info_margin = [5, 5];   // [x,y] margin from bottom-right edges (mm)
 corner_info_line_spacing = 1.1; // spacing multiplier between lines
 
